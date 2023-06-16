@@ -22,11 +22,11 @@ class OnlineNewtonStep(AbstractBet):
             return 0 # bet 0 for the first time 
         else: 
             prev_payoff = payoff_history[-1]
-            z = prev_payoff / (1 - self.prev_lambd*prev_payoff)
+            z = -prev_payoff / (1 + self.prev_lambd*prev_payoff)
             self.sum_z_squared += z**2
             lambd = max(
                 min(
-                    -self.prev_lambd + self.const*z/self.sum_z_squared, 1/2
+                    self.prev_lambd - self.const*z/self.sum_z_squared, 1/2
                     ), 
                 -1/2
                 )
