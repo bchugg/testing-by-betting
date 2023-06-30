@@ -1,6 +1,8 @@
 from .base import AbstractBettor
 
-class SingleDimensionONS(AbstractBettor): 
+class OneSampleScalarONS(AbstractBettor): 
+    """Single dimensional one sample test using ONS betting strategy.
+    """
 
     def __init__(self, mu, alpha=0.05) -> None:
         super().__init__(alpha, strategy='ONS')

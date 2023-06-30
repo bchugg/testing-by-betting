@@ -1,6 +1,12 @@
 import numpy as np 
 
 class AbstractBet: 
+    """Abstract class from which all betting strategies inherit.
+    Write your own betting strategy by inheriting from this class.
+
+    Methods: 
+        next_bet: function - return next bet (a scalar value) given payoff history
+    """
 
     def __init__(self) -> None:
         pass
@@ -10,6 +16,10 @@ class AbstractBet:
 
 
 class OnlineNewtonStep(AbstractBet):
+    """Online Newton Step betting strategy. 
+    See Shekhar and Ramdas (2023), "Nonparametric Two-Sample Testing by Betting"
+    https://arxiv.org/pdf/2112.09162.pdf for more details. 
+    """
 
     def __init__(self) -> None:
         self.const = 2 / (2 - np.log(3))
