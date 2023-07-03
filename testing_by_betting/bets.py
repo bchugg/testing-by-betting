@@ -5,7 +5,8 @@ class AbstractBet:
     Write your own betting strategy by inheriting from this class.
 
     Methods: 
-        next_bet: function - return next bet (a scalar value) given payoff history
+        next_bet: function
+            return next bet (a scalar value) given payoff history
     """
 
     def __init__(self) -> None:

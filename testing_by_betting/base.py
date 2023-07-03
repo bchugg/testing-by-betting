@@ -7,23 +7,36 @@ class AbstractBettor:
     Write your own strategy by inheriting from this class. 
 
     Properties:
-        strategy: str - betting strategy to use (sequence of lambdas)
-        alpha: float - significance level
-        verbose: bool - whether to print out rejection
-        wealth: float - current wealth
-        iters: int - number of iterations so far 
-        randomize_ville: bool - whether to use randomized ville inequality when 
+        strategy: str
+            betting strategy to use (sequence of lambdas)
+        alpha: float
+            significance level
+        verbose: bool
+            whether to print out rejection
+        wealth: float
+            current wealth
+        iters: int
+            number of iterations so far 
+        randomize_ville: bool
+            whether to use randomized ville inequality when 
             calculating if null hypothesis should be rejected (see Methods)
-        reject_null: bool - whether null hypothesis has been rejected
-        wealth_history: list[float] - history of wealth process
-        bet_history: list[float] - history of bets
-        payoff_history: list[float] - history of payoffs
+        reject_null: bool
+            whether null hypothesis has been rejected
+        wealth_history: list[float]
+            history of wealth process
+        bet_history: list[float]
+            history of bets
+        payoff_history: list[float]
+            history of payoffs
 
     Methods:
-        predict: function - payoff function. Maps next observations(s) to payoff. 
+        predict: function
+            payoff function. Maps next observations(s) to payoff. 
             This needs to be implemented by each inheriting class.
-        step: function - Complete one iteration: calculate bet, payoff, and update wealth. 
-        reject: function - Compute if null hypothesis should be rejected by checking if 
+        step: function
+            Complete one iteration: calculate bet, payoff, and update wealth. 
+        reject: function
+            Compute if null hypothesis should be rejected by checking if 
             wealth exceeds 1/self.alpha. If self.randomized_ville is True, then, if process 
             has stopped, check if wealth exceeds u/self.alpha where u is a uniform random 
             variable. See Manole and Ramdas (2023), "Randomized and Exchangeable Improvements 
