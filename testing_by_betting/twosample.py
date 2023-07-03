@@ -24,9 +24,12 @@ class KernelMMD(AbstractBettor):
         self.kernel = kernel 
         self.post_processing = post_processing
         self.bandwidth = 1
-
+        self.kernel = None
+        
+        # Histories
         self.X_hist = []
         self.Y_hist = []
+        self.mmd_unnormalized = []
 
         post_processing_options = ['sinh', 'tanh', 'arctan', 'deLaPena', None]
         if post_processing not in post_processing_options: 
@@ -38,10 +41,12 @@ class KernelMMD(AbstractBettor):
     def _update_kernel(self):
 
         # Update bandwidth 
-        Z = np.concatenate((self.X_hist, self.Y_hist), axis=0)
-        dists_ = pdist(Z)
-        # obtain the median of these pairwise distances 
-        bw = np.median(dists_)
+        bw = 1
+        if len(self.X_hist) >= 20: 
+            Z = np.concatenate((self.X_hist, self.Y_hist), axis=0)
+            dists_ = pdist(Z)
+            bw = np.median(dists_)
+
         # update the kernel
         self.kernel = partial(RBF_kernel, bw=bw)
     
@@ -52,23 +57,28 @@ class KernelMMD(AbstractBettor):
         self.X_hist.append(X1)
         self.Y_hist.append(X2)
 
-        # Update kernel 
-        self._update_kernel
+        if len(self.X_hist) == 1: 
+            return 0
 
-        # Compute MMD
+        # Update kernel 
+        self._update_kernel()
+        assert self.kernel is not None, 'Kernel not yet set.'
+
+        # # Compute MMD
         KXX = self.kernel(self.X_hist, self.X_hist)
         KYY = self.kernel(self.Y_hist, self.Y_hist)
         KXY = self.kernel(self.X_hist, self.Y_hist)
 
-        termX = np.mean((KXX[-1, :] - KXY[-1, :]))
-        termY = np.mean((KXY[:, -1] - KYY[:, -1]))
-        self.mmd_unnormalized = termX - termY
-        mmd = self.mmd_unnormalized
+        n0 = len(self.X_hist) - 1
+        termX = np.mean((KXX[n0, :n0] - KXY[n0, :n0]))
+        termY = np.mean((KXY[:n0, n0] - KYY[:n0, n0]))
+        self.mmd_unnormalized.append(termX - termY)
+        mmd = self.mmd_unnormalized[-1]
         
-        ### a heuristic that significantly improve the practical performance
+        # a heuristic that significantly improves the practical performance
         if len(self.X_hist) > 10:
             max_val = np.max(self.mmd_unnormalized)
-            mmd = self.mmd_unnormalized / max_val 
+            mmd = self.mmd_unnormalized[-1] / max_val 
 
         # Post processing
         if self.post_processing == 'sinh':
@@ -81,3 +91,4 @@ class KernelMMD(AbstractBettor):
             mmd = deLaPena_martingale(mmd)
         
         return mmd
+    
