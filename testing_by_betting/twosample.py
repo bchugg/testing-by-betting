@@ -12,6 +12,10 @@ class TwoSampleScalarONS(AbstractBettor):
     def __init__(self, alpha=0.05) -> None:
         super().__init__(alpha, strategy='ONS')
 
+    @property
+    def name(self):
+        return 'Scalar two sample test with ONS'
+
     def predict(self, X1, X2):
         return X1 - X2
     
@@ -53,7 +57,7 @@ class KernelMMD(AbstractBettor):
         # check if update kernel function is provided and callable.  
         if kernel is None: 
             self.kernel = None
-            self.kernel_name = 'rbf'
+            self.kernel_name = 'RBF'
             self._update_kernel = self._update_rbf
         else: 
             self.kernel = kernel 
@@ -73,6 +77,10 @@ class KernelMMD(AbstractBettor):
             raise ValueError(f'Post processing option {post_processing} not recognized. '+
                              'Options are {post_processing_options}')
 
+    @property
+    def name(self):
+        return f"KernelMMD with {self.kernel_name} kernel"
+    
     def _update_rbf(self):
 
         # Update bandwidth 
@@ -95,7 +103,8 @@ class KernelMMD(AbstractBettor):
             return 0
 
         # Update kernel if applicable   
-        self._update_kernel()
+        if self._update_kernel is not None:
+            self._update_kernel()
         assert self.kernel is not None, 'Kernel not yet set.'
 
         # Compute MMD
