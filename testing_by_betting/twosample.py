@@ -2,6 +2,7 @@ from .base import AbstractBettor
 from scipy.spatial.distance import pdist
 from .utils import RBF_kernel
 from .utils import deLaPena_martingale
+from .utils import empirical_cdf
 from functools import partial
 import numpy as np 
 
@@ -135,3 +136,67 @@ class KernelMMD(AbstractBettor):
         
         return mmd
     
+
+class ScalarKS(AbstractBettor): 
+    """Sequential two sample Kolmogorov-Smirnov test for real valued data."""
+
+    def __init__(self, alpha=0.05, direction=0, **kwargs) -> None:
+        super().__init__(alpha=alpha, strategy='ONS', **kwargs)
+        self.X_hist = []
+        self.Y_hist = []
+        self.direction = direction
+
+    @property
+    def name(self):
+        return 'KS test'
+    
+    def predict(self, X1, X2):
+
+        # Update history    
+        self.X_hist.append(X1)
+        self.Y_hist.append(X2) 
+
+        # compute the empirical cdf 
+        G = np.concatenate((self.X_hist, self.Y_hist))
+        cdf_X = empirical_cdf(self.X_hist, G)
+        cdf_Y = empirical_cdf(self.Y_hist, G)
+        
+        if self.direction == 0:
+            diffF = cdf_X - cdf_Y
+        else: 
+            diffF = cdf_Y - cdf_X
+        idx = np.argmax(diffF) 
+        u = G[idx] 
+
+        X, Y = self.X_hist[-1], self.Y_hist[-1]
+        if self.direction == 0:
+            res = (X <= u)*1.0 - (Y <= u)*1.0
+        else:
+             res = (Y <= u)*1.0 - (X <= u)*1.0
+
+        return res
+
+        
+
+
+def KSprediction(X, Y, direction=0):
+    nX = len(X)
+    F = np.zeros((nX,))
+    for i in range(1, nX):
+        Xi, Yi = X[:i], Y[:i]
+        # get the grid points 
+        G = np.concatenate((Xi, Yi))
+        # compute the empirical cdf at points in G 
+        FXi = np.array([np.sum(Xi<=g) for g in G])
+        FYi = np.array([np.sum(Yi<=g) for g in G])
+        if direction==0:
+            diffF = FXi - FYi 
+        else: 
+            diffF = FYi - FXi 
+        idx = np.argmax(diffF) 
+        u = G[idx] 
+        if direction==0:
+            F[i] = (X[i]<=u)*1.0 - (Y[i]<=u)*1.0
+        else:
+            F[i] = (Y[i]<=u)*1.0 - (X[i]<=u)*1.0
+    return F 
