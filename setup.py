@@ -15,5 +15,15 @@ setup(
     author_email='benchugg@cmu.edu',
     license='MIT',
     packages=['testing_by_betting'],
-    zip_safe=False
+    zip_safe=False,
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Science/Research",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Scientific/Engineering :: Mathematics",
+    ],
 )
