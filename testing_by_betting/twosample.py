@@ -138,7 +138,14 @@ class KernelMMD(AbstractBettor):
     
 
 class ScalarKS(AbstractBettor): 
-    """Sequential two sample Kolmogorov-Smirnov test for real valued data."""
+    """Sequential two sample Kolmogorov-Smirnov test for real valued data. 
+    See Howard and Ramdas (2022) for details. 
+
+    Attributes (beyond AbstractBettor attributes)
+    ----------
+    X_hist, Y_hist : list of arrays
+        Histories of observations
+    """
 
     def __init__(self, alpha=0.05, direction=0, **kwargs) -> None:
         super().__init__(alpha=alpha, strategy='ONS', **kwargs)
@@ -165,38 +172,13 @@ class ScalarKS(AbstractBettor):
             diffF = cdf_X - cdf_Y
         else: 
             diffF = cdf_Y - cdf_X
+
         idx = np.argmax(diffF) 
         u = G[idx] 
 
-        X, Y = self.X_hist[-1], self.Y_hist[-1]
         if self.direction == 0:
-            res = (X <= u)*1.0 - (Y <= u)*1.0
+            res = (X1 <= u)*1.0 - (X2 <= u)*1.0
         else:
-             res = (Y <= u)*1.0 - (X <= u)*1.0
+            res = (X2 <= u)*1.0 - (X1 <= u)*1.0
 
         return res
-
-        
-
-
-def KSprediction(X, Y, direction=0):
-    nX = len(X)
-    F = np.zeros((nX,))
-    for i in range(1, nX):
-        Xi, Yi = X[:i], Y[:i]
-        # get the grid points 
-        G = np.concatenate((Xi, Yi))
-        # compute the empirical cdf at points in G 
-        FXi = np.array([np.sum(Xi<=g) for g in G])
-        FYi = np.array([np.sum(Yi<=g) for g in G])
-        if direction==0:
-            diffF = FXi - FYi 
-        else: 
-            diffF = FYi - FXi 
-        idx = np.argmax(diffF) 
-        u = G[idx] 
-        if direction==0:
-            F[i] = (X[i]<=u)*1.0 - (Y[i]<=u)*1.0
-        else:
-            F[i] = (Y[i]<=u)*1.0 - (X[i]<=u)*1.0
-    return F 

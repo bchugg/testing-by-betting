@@ -26,3 +26,9 @@ def deLaPena_martingale(val):
         return val_plus - 1
     else:
         return 2 - val_minus - 1
+    
+def empirical_cdf(arr, grid): 
+    """Compute empirical CDF of arr at grid points"""
+    return np.array(
+        [np.sum(arr <= g) for g in grid]
+        )
