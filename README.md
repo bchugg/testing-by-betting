@@ -7,7 +7,7 @@ This package implements various procedures for **[sequential, nonparametric hypo
 The sequential nature of the tests enable practitioners to monitor data as they arrive and to continually test the hypothesis of interest. This is in contrast to fixed-time hypothesis tests which do not allow for continual testing, and which necessitate choosing the sample size beforehand. 
 
 **Contents** 
-- [Installation](#installation)
+- [Installation](#installation-)
 - [Usage](#usage)
 - [Background](#background)
 - [Implemented tests](#strategies)
@@ -85,11 +85,11 @@ The idea at the heart of testing by betting is to view sequential hypothesis tes
 two players, which we call nature and skeptic.  The game proceeds as follows: 
 
 - At time 0, the skeptic begins with a wealth of $\mathcal{K}_0=1$. 
-- At time $t$, the skeptic chooses a payoff function $S_t:\mathcal{Z} \to [0,\infty]$. Crucially, the the payoff function must obey $\mathbb{E}_P[S_t(Z)|\mathcal{F}_{t-1}] \leq 1$ for all $P$ in the null hypothesis $H_0$. (Composite nulls are thus allowed.) 
+- At time $t$, the skeptic chooses a payoff function $S_t:\mathcal{Z} \to [0,\infty]$. Crucially, the the payoff function must obey $\mathbb{E}\_P[S\_t(Z)|\mathcal{F}\_{t-1}] \leq 1$ for all $P$ in the null hypothesis $H_0$. (Composite nulls are thus allowed.) 
 - Nature then reveals a value $Z_t$ (which might consist of a single scalar observation, two multivariate observations, etc). 
-- Skeptic updates wealth as $\mathcal{K}_t = \mathcal{K}_{t-1}\cdot S_t(Z_t)$. 
+- Skeptic updates wealth as $\mathcal{K}\_t = \mathcal{K}\_{t-1}\cdot S\_t(Z_t)$. 
 
-The skeptic's wealth is used as a measure of evidence against the null: if it grows too large we reject. In particular, for a given significance level $\alpha$, we reject the null as soon as $\mathcal{K}_t \geq 1/\alpha$. Mathematically, this is guaranteed to be a level-$\alpha$ sequential test by Ville's inequality for nonnegative supermartingales. See [this survey](https://arxiv.org/pdf/2210.01948.pdf) for mode details. 
+The skeptic's wealth is used as a measure of evidence against the null: if it grows too large we reject. In particular, for a given significance level $\alpha$, we reject the null as soon as $\mathcal{K}\_t \geq 1/\alpha$. Mathematically, this is guaranteed to be a level $\alpha$ sequential test by Ville's inequality for nonnegative supermartingales. See [this survey](https://arxiv.org/pdf/2210.01948.pdf) for more details. 
 
 
 # Implemented Strategies <a id='strategies'></a>
